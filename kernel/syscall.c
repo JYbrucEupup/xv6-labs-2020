@@ -170,15 +170,14 @@ syscall(void)
   num = p->trapframe->a7;
   // 如果系统调用编号有效（大于 0 且小于 syscalls 数组的长度，并且对应的处理函数存在）
   if(num > 0 && num < NELEM(syscalls) && syscalls[num]) {
-      // 调用对应的处理函数，并将返回值存储在 a0 寄存器中
-      p->trapframe->a0 = syscalls[num]();                           
+    // 调用对应的处理函数，并将返回值存储在 a0 寄存器中
+    p->trapframe->a0 = syscalls[num]();                           
 
-      // 如果当前进程启用了trace跟踪，则按照题设要求打印信息
-      if ((p->kama_syscall_trace >> num) & 1) {				
-          printf("%d: syscall %s -> %d\n",p->pid, kama_syscall_names[num], p->trapframe->a0); 
-      }
-  }
-  else {
+    // 如果当前进程启用了trace跟踪，则按照题设要求打印信息
+    if ((p->kama_syscall_trace >> num) & 1) {				
+      printf("%d: syscall %s -> %d\n",p->pid, kama_syscall_names[num], p->trapframe->a0); 
+    }
+  } else {
     printf("%d %s: unknown sys call %d\n",
             p->pid, p->name, num);
     p->trapframe->a0 = -1;
